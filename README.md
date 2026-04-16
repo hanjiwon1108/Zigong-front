@@ -1,59 +1,118 @@
-# Frontend
+# Zigong Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.7.
+자공(Zigong) 서비스의 프론트엔드 애플리케이션입니다.
+Angular 21 기반으로 구성되어 있으며, 대시보드/시뮬레이터 화면에서 백엔드 API 데이터를 시각화하고 사용자 소비 흐름을 확인할 수 있습니다.
 
-## Development server
+## 1. 기술 스택
 
-To start a local development server, run:
+- Angular 21
+- TypeScript
+- Angular Material / CDK
+- Chart.js + ng2-charts
+- RxJS
 
-```bash
-ng serve
-```
+## 2. 실행 환경
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Node.js 20 이상 권장
+- npm 11 이상
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+버전 확인:
 
 ```bash
-ng generate --help
+node -v
+npm -v
 ```
 
-## Building
+## 3. 설치 및 실행
 
-To build the project run:
+프로젝트 루트가 아니라 `frontend` 폴더에서 실행합니다.
 
 ```bash
-ng build
+cd frontend
+npm install
+npm run start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+기본 실행 주소:
 
-## Running unit tests
+- `http://localhost:4200`
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## 4. 주요 스크립트
 
 ```bash
-ng test
+# 개발 서버
+npm run start
+
+# 프로덕션 빌드
+npm run build
+
+# 개발 빌드 watch
+npm run watch
+
+# 단위 테스트
+npm run test
 ```
 
-## Running end-to-end tests
+## 5. 폴더 구조
 
-For end-to-end (e2e) testing, run:
+```text
+frontend/
+	src/
+		app/
+			components/
+				glass-card/
+			pages/
+				dashboard/
+				simulator/
+			services/
+				api.ts
+```
+
+## 6. 백엔드 연동
+
+프론트엔드는 `src/app/services/api.ts`에서 백엔드 API를 호출합니다.
+로컬 개발 시 백엔드는 기본적으로 `http://localhost:8000`에서 실행되는 것을 기준으로 합니다.
+
+백엔드 API 예시:
+
+- `GET /api/user/{user_id}`
+- `GET /api/transactions/{user_id}`
+- `GET /api/user/{user_id}/analytics`
+- `GET /api/user/{user_id}/anomalies`
+
+## 7. 배포 빌드
 
 ```bash
-ng e2e
+cd frontend
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+빌드 결과물은 `frontend/dist/`에 생성됩니다.
 
-## Additional Resources
+## 8. 개발 가이드
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- 공통 UI 컴포넌트는 `components/`에 작성
+- 페이지 단위 화면은 `pages/`에 작성
+- API 호출/응답 매핑은 `services/api.ts`로 일원화
+
+## 9. 트러블슈팅
+
+- 포트 충돌 시:
+	`npm run start -- --port 4300`
+- 의존성 꼬임 시:
+	`rm -rf node_modules package-lock.json && npm install`
+
+## 10. Git 커밋 컨벤션
+
+아래 타입을 기준으로 커밋합니다.
+
+- `feat`: 새로운 기능 추가
+- `fix`: 버그 수정
+- `docs`: 문서 관련
+- `style`: 스타일 변경
+- `refactor`: 코드 리팩토링
+- `test`: 테스트 관련 코드
+- `build`: 빌드 관련 파일 수정
+- `ci`: CI 설정 파일 수정
+- `perf`: 성능 개선
+- `chore`: 그 외 자잘한 수정
