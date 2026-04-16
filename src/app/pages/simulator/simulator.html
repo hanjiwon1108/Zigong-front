@@ -1,0 +1,52 @@
+<div class="simulator-header animate-fade-in">
+  <h1>미래 자산 시뮬레이터</h1>
+  <p class="subtitle">나의 기존 소비 패턴을 변경하면, 미래의 자산 규모에 어떠한 변화를 가져올지 쉽게 확인하세요.</p>
+</div>
+
+<div *ngIf="loading" class="loading-state">
+  <div class="spinner"></div>
+</div>
+
+<div *ngIf="!loading" class="simulator-layout animate-fade-in-up">
+  <app-glass-card title="AI 추천 시뮬레이션 설정" class="controls-card">
+    <p class="desc">
+      고객님이 30일간 보인 행동경제학적 분석에 따르면, <strong>{{ analytics?.consumption_type }}</strong>에 속합니다.<br>
+      충동적 지출(쇼핑, 야간 배달 등)을 억제하여 <span class="highlight-text">월 30만원을 저축으로 전환할 시</span> 증식되는 예상 자산을 확인해 보세요.
+    </p>
+
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" [checked]="savingMode" (change)="toggleSimulation()">
+        <span class="slider round"></span>
+      </label>
+      <span class="toggle-label" [ngClass]="{'active': savingMode}">
+        충동 소비 비용 월 30만원 절약 모드 적용
+      </span>
+    </div>
+    
+    <div class="prediction-stats" *ngIf="analytics?.predictions">
+      <div class="stat-box">
+        <h4>1년 후 예상 달성 자산</h4>
+        <div class="amount" [ngClass]="{'highlight-green': savingMode}">
+          {{ savingMode ? (analytics?.predictions[0].predicted_amount + (300000*12*1) | number) : (analytics?.predictions[0].predicted_amount | number) }} 원
+        </div>
+      </div>
+      <div class="stat-box">
+        <h4>5년 후 장기적 성장 목표 예상 금액</h4>
+        <div class="amount highlight" [ngClass]="{'highlight-green': savingMode}">
+          {{ savingMode ? (analytics?.predictions[2].predicted_amount + (300000*12*5) | number) : (analytics?.predictions[2].predicted_amount | number) }} 원
+        </div>
+      </div>
+    </div>
+  </app-glass-card>
+
+  <app-glass-card title="투자 성장 곡선" class="chart-card">
+    <div class="chart-container">
+      <canvas baseChart
+        [data]="lineChartData"
+        [options]="lineChartOptions"
+        [type]="'line'">
+      </canvas>
+    </div>
+  </app-glass-card>
+</div>

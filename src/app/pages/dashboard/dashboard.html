@@ -1,0 +1,58 @@
+<div class="dashboard-header animate-fade-in">
+  <h1>자산 및 소비 요약</h1>
+  <p class="subtitle">AI가 분석한 최근 소비 패턴입니다.</p>
+</div>
+
+<div *ngIf="loading" class="loading-state">
+  <div class="spinner"></div>
+</div>
+
+<div *ngIf="!loading" class="dashboard-grid animate-fade-in-up">
+  <!-- 요약 지표 카드 -->
+  <app-glass-card title="최근 30일 누적 소비액">
+    <div class="metric-value">{{ analytics?.total_spent_last_30_days | number }}<span class="currency">원</span></div>
+    <div class="metric-sub">K-Means AI 분류: <span class="badge">{{ analytics?.consumption_type }}</span></div>
+  </app-glass-card>
+
+  <app-glass-card title="충동 소비 지수">
+    <div class="metric-value" [ngClass]="{'danger': analytics?.impulse_ratio > 30}">
+      {{ analytics?.impulse_ratio }}<span class="currency">%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" [ngStyle]="{'width': analytics?.impulse_ratio + '%', 'background': analytics?.impulse_ratio > 30 ? 'var(--accent-danger)' : 'var(--accent-blue)'}"></div>
+    </div>
+    <p class="mt-2 text-sm text-secondary">쇼핑 및 야간 배달 등 비계획적 소비 비율입니다.</p>
+  </app-glass-card>
+
+  <app-glass-card title="최근 지출 내역" class="full-width">
+    <table class="transaction-table">
+      <thead>
+        <tr>
+          <th>카테고리</th>
+          <th>내용</th>
+          <th>일시</th>
+          <th>결제 금액</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of transactions">
+          <td><span class="category-tag">{{ t.category }}</span></td>
+          <td>{{ t.description }}</td>
+          <td>{{ t.date }} <span class="text-secondary">{{ t.time }}</span></td>
+          <td class="amount">-{{ t.amount | number }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </app-glass-card>
+
+  <app-glass-card title="경보: AI 이상 소비 탐지 (Isolation Forest)" class="full-width" *ngIf="anomalies.length > 0">
+    <div class="anomaly-item" *ngFor="let a of anomalies">
+      <div class="icon">⚠️</div>
+      <div class="details">
+        <strong>평소 소비 패턴과 비교해 비정상적으로 높은 결제입니다.</strong> <br>
+        <span class="text-sm">탐지 항목: {{ a.date }} - {{ a.description }}</span>
+      </div>
+      <div class="amount text-danger">-{{ a.amount | number }} 원</div>
+    </div>
+  </app-glass-card>
+</div>
