@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); build=d['projects']['frontend']['architect']['build']; print\\(json.dumps\\(build.get\\('builder'\\), indent=2\\)\\); print\\(json.dumps\\(build.get\\('options',{}\\).get\\('styles'\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['projects']['frontend']['architect']['build']['options'], indent=2\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(npm start *)"
+    ]
+  }
+}
