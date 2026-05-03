@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
+import { BottomNav } from './widgets/bottom-nav/bottom-nav';
+import { ThemeService } from './shared/model/theme.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterModule],
+  standalone: true,
+  imports: [RouterOutlet, RouterModule, BottomNav],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  title = 'AI 소비 시뮬레이터 자공';
+  readonly theme = inject(ThemeService);
 }
