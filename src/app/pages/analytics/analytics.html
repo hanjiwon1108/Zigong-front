@@ -1,0 +1,70 @@
+<header class="page-header animate-fade-in">
+  <h1>소비 분석</h1>
+  <p class="subtitle">AI가 분석한 나의 소비 패턴</p>
+</header>
+
+@if (loading) {
+  <div class="loading-state"><div class="spinner"></div></div>
+} @else {
+  <div class="animate-fade-in-up">
+
+    <!-- AI 요약 칩 4개 -->
+    <div class="stat-chips">
+      <div class="chip">
+        <span class="chip-label">소비 유형</span>
+        <span class="chip-value blue">{{ analytics?.consumption_type }}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">충동 비율</span>
+        <span class="chip-value" [class.red]="(analytics?.impulse_ratio ?? 0) > 30">{{ analytics?.impulse_ratio }}%</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">30일 지출</span>
+        <span class="chip-value">{{ analytics?.total_spent_last_30_days | number }}원</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">카테고리</span>
+        <span class="chip-value">{{ categoryStats.length }}개</span>
+      </div>
+    </div>
+
+    <!-- 카테고리 목록 -->
+    <div class="section-label">카테고리별 지출</div>
+    <div class="card-block">
+      @for (s of categoryStats; track s.category) {
+        <div class="cat-row">
+          <div class="cat-dot-wrap">
+            <span class="cat-dot" [style.background]="s.color"></span>
+          </div>
+          <div class="cat-info">
+            <div class="cat-top">
+              <span class="cat-name">{{ s.category }}</span>
+              <span class="cat-pct">{{ s.ratio }}%</span>
+            </div>
+            <div class="cat-bar-bg">
+              <div class="cat-bar-fill" [style.width.%]="s.ratio" [style.background]="s.color"></div>
+            </div>
+          </div>
+          <span class="cat-amt">{{ s.amount | number }}원</span>
+        </div>
+      }
+    </div>
+
+    <!-- 도넛 차트 -->
+    <div class="section-label">비중 차트</div>
+    <div class="chart-card">
+      <div class="doughnut-box">
+        <canvas baseChart [data]="doughnutData" [options]="doughnutOptions" type="doughnut"></canvas>
+      </div>
+    </div>
+
+    <!-- 월별 바 차트 -->
+    <div class="section-label">월별 지출 추이</div>
+    <div class="chart-card">
+      <div class="bar-box">
+        <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
+      </div>
+    </div>
+
+  </div>
+}
