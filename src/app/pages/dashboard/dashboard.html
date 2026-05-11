@@ -1,58 +1,82 @@
-<div class="dashboard-header animate-fade-in">
-  <h1>자산 및 소비 요약</h1>
-  <p class="subtitle">AI가 분석한 최근 소비 패턴입니다.</p>
-</div>
+@if (loading) {
+  <div class="loading-state"><div class="spinner"></div></div>
+} @else {
+  <div class="animate-fade-in-up">
 
-<div *ngIf="loading" class="loading-state">
-  <div class="spinner"></div>
-</div>
-
-<div *ngIf="!loading" class="dashboard-grid animate-fade-in-up">
-  <!-- 요약 지표 카드 -->
-  <app-glass-card title="최근 30일 누적 소비액">
-    <div class="metric-value">{{ analytics?.total_spent_last_30_days | number }}<span class="currency">원</span></div>
-    <div class="metric-sub">K-Means AI 분류: <span class="badge">{{ analytics?.consumption_type }}</span></div>
-  </app-glass-card>
-
-  <app-glass-card title="충동 소비 지수">
-    <div class="metric-value" [ngClass]="{'danger': analytics?.impulse_ratio > 30}">
-      {{ analytics?.impulse_ratio }}<span class="currency">%</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" [ngStyle]="{'width': analytics?.impulse_ratio + '%', 'background': analytics?.impulse_ratio > 30 ? 'var(--accent-danger)' : 'var(--accent-blue)'}"></div>
-    </div>
-    <p class="mt-2 text-sm text-secondary">쇼핑 및 야간 배달 등 비계획적 소비 비율입니다.</p>
-  </app-glass-card>
-
-  <app-glass-card title="최근 지출 내역" class="full-width">
-    <table class="transaction-table">
-      <thead>
-        <tr>
-          <th>카테고리</th>
-          <th>내용</th>
-          <th>일시</th>
-          <th>결제 금액</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let t of transactions">
-          <td><span class="category-tag">{{ t.category }}</span></td>
-          <td>{{ t.description }}</td>
-          <td>{{ t.date }} <span class="text-secondary">{{ t.time }}</span></td>
-          <td class="amount">-{{ t.amount | number }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </app-glass-card>
-
-  <app-glass-card title="경보: AI 이상 소비 탐지 (Isolation Forest)" class="full-width" *ngIf="anomalies.length > 0">
-    <div class="anomaly-item" *ngFor="let a of anomalies">
-      <div class="icon">⚠️</div>
-      <div class="details">
-        <strong>평소 소비 패턴과 비교해 비정상적으로 높은 결제입니다.</strong> <br>
-        <span class="text-sm">탐지 항목: {{ a.date }} - {{ a.description }}</span>
+    <!-- 사용자 인사 -->
+    @if (user) {
+      <div class="greeting">
+        <div class="greeting-top">
+          <div class="avatar" aria-hidden="true">{{ user.name[0] }}</div>
+          <div class="user-meta">
+            <span class="user-name">{{ user.name }}님</span>
+            <span class="user-income">월 수입 {{ user.monthly_income | number }}원</span>
+          </div>
+        </div>
       </div>
-      <div class="amount text-danger">-{{ a.amount | number }} 원</div>
+    }
+
+    <!-- 자산 히어로 카드 -->
+    <div class="hero-card" role="region" aria-label="현재 자산 요약">
+      <p class="hero-label">현재 자산</p>
+      <p class="hero-amount">{{ user?.total_assets | number }}<span class="hero-unit">원</span></p>
+      <div class="hero-row">
+        <span class="hero-sub">이번 달 저축 가능</span>
+        <span class="hero-saving">+{{ monthlySaving | number }}원</span>
+      </div>
     </div>
-  </app-glass-card>
-</div>
+
+    <!-- 요약 카드 2개 -->
+    <div class="summary-row">
+      <div class="sum-card">
+        <p class="sum-label">30일 소비</p>
+        <p class="sum-value">{{ analytics?.total_spent_last_30_days | number }}원</p>
+        <span class="badge blue">{{ analytics?.consumption_type }}</span>
+      </div>
+      <div class="sum-card">
+        <p class="sum-label">충동 소비 지수</p>
+        <p class="sum-value" [class.red]="(analytics?.impulse_ratio ?? 0) > 30">
+          {{ analytics?.impulse_ratio }}%
+        </p>
+        <div class="bar-bg" role="progressbar" [attr.aria-valuenow]="analytics?.impulse_ratio" aria-valuemin="0" aria-valuemax="100">
+          <div class="bar-fill" [style.width]="(analytics?.impulse_ratio ?? 0) + '%'" [class.red]="(analytics?.impulse_ratio ?? 0) > 30"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 이상 소비 알림 -->
+    @if (anomalies.length > 0) {
+      <div class="section-title">AI 이상 탐지</div>
+      @for (a of anomalies; track a.id) {
+        <div class="alert-row" role="alert">
+          <div class="alert-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F04452" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="alert-body">
+            <span class="alert-desc">{{ a.description }}</span>
+            <span class="alert-date">{{ a.date }}</span>
+          </div>
+          <span class="alert-amount" aria-label="이상 지출 금액">-{{ a.amount | number }}원</span>
+        </div>
+      }
+    }
+
+    <!-- 최근 내역 -->
+    <div class="section-title">최근 지출</div>
+    <div class="card-block" role="list">
+      @for (t of recentTx; track t.id) {
+        <div class="tx-row" role="listitem">
+          <div class="tx-icon-wrap" aria-hidden="true">
+            <ui-category-tag [category]="t.category" />
+          </div>
+          <div class="tx-info">
+            <span class="tx-desc">{{ t.description }}</span>
+            <span class="tx-date">{{ t.date }}</span>
+          </div>
+          <span class="tx-amount" aria-label="지출 금액">-{{ t.amount | number }}원</span>
+        </div>
+      }
+    </div>
+
+  </div>
+}

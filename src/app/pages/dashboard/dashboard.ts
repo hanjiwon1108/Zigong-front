@@ -1,41 +1,47 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Api } from '../../services/api';
-import { GlassCard } from '../../components/glass-card/glass-card';
+import { forkJoin } from 'rxjs';
+import { UserApi } from '../../entities/user/api/user.api';
+import { TransactionApi } from '../../entities/transaction/api/transaction.api';
+import { AnalyticsApi } from '../../entities/analytics/api/analytics.api';
+import { CategoryTag } from '../../shared/ui/category-tag';
+import { User, Transaction, Analytics, Anomaly } from '../../shared/model/types';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'page-dashboard',
   standalone: true,
-  imports: [CommonModule, GlassCard],
+  imports: [CommonModule, CategoryTag],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit {
-  analytics: any = null;
-  transactions: any[] = [];
-  anomalies: any[] = [];
+export class DashboardPage implements OnInit {
+  private userApi = inject(UserApi);
+  private txApi = inject(TransactionApi);
+  private analyticsApi = inject(AnalyticsApi);
+
+  user: User | null = null;
+  analytics: Analytics | null = null;
+  recentTx: Transaction[] = [];
+  anomalies: Anomaly[] = [];
   loading = true;
 
-  constructor(private api: Api) {}
-
   ngOnInit() {
-    this.api.getAnalytics(1).subscribe(res => {
-      this.analytics = res;
-      this.checkLoading();
-    });
-    this.api.getTransactions(1).subscribe(res => {
-      this.transactions = res.slice(0, 7); // 최근 7건
-      this.checkLoading();
-    });
-    this.api.getAnomalies(1).subscribe(res => {
-      this.anomalies = res.slice(0, 3); // 심각한 것 최대 3건
-      this.checkLoading();
+    forkJoin({
+      user: this.userApi.getUser(),
+      analytics: this.analyticsApi.getAnalytics(),
+      transactions: this.txApi.getTransactions(),
+      anomalies: this.txApi.getAnomalies()
+    }).subscribe(({ user, analytics, transactions, anomalies }) => {
+      this.user = user;
+      this.analytics = analytics;
+      this.recentTx = transactions.slice(0, 7);
+      this.anomalies = anomalies.slice(0, 3);
+      this.loading = false;
     });
   }
 
-  checkLoading() {
-    if(this.analytics && this.transactions) {
-      this.loading = false;
-    }
+  get monthlySaving(): number {
+    if (!this.user || !this.analytics) return 0;
+    return this.user.monthly_income - this.analytics.total_spent_last_30_days;
   }
 }
