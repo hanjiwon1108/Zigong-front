@@ -1,87 +1,78 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartConfiguration, ChartOptions } from 'chart.js';
+import { forkJoin } from 'rxjs';
+import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { Api } from '../../services/api';
-import { GlassCard } from '../../components/glass-card/glass-card';
+import { UserApi } from '../../entities/user/api/user.api';
+import { AnalyticsApi } from '../../entities/analytics/api/analytics.api';
+import { SavingToggle } from '../../features/asset-simulator/saving-toggle';
+import { User, Analytics } from '../../shared/model/types';
+import { lineOptions } from '../../widgets/chart/chart-options';
+
+const MONTHLY_SAVING = 300_000;
 
 @Component({
-  selector: 'app-simulator',
+  selector: 'page-simulator',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, GlassCard],
+  imports: [CommonModule, BaseChartDirective, SavingToggle],
   templateUrl: './simulator.html',
   styleUrl: './simulator.css'
 })
-export class Simulator implements OnInit {
-  analytics: any = null;
-  loading: boolean = true;
-  savingMode: boolean = false;
+export class SimulatorPage implements OnInit {
+  private userApi = inject(UserApi);
+  private analyticsApi = inject(AnalyticsApi);
 
-  public lineChartData: ChartConfiguration<'line'>['data'] = {
-    labels: ['현재 자산', '1년 후', '3년 후', '5년 후'],
-    datasets: []
-  };
+  user: User | null = null;
+  analytics: Analytics | null = null;
+  loading = true;
+  savingMode = false;
 
-  public lineChartOptions: ChartOptions<'line'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: '#f8fafc', font: { family: 'Inter', size: 14 } } },
-      tooltip: { titleFont: { family: 'Inter' }, bodyFont: { family: 'Inter' } }
-    },
-    scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-    }
-  };
-
-  constructor(private api: Api) {}
+  lineData: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
+  readonly lineOptions = lineOptions;
 
   ngOnInit() {
-    this.api.getAnalytics(1).subscribe(res => {
-      this.analytics = res;
-      this.updateChart();
-      this.loading = false;
-    });
+    forkJoin({ user: this.userApi.getUser(), analytics: this.analyticsApi.getAnalytics() })
+      .subscribe(({ user, analytics }) => {
+        this.user = user;
+        this.analytics = analytics;
+        this.rebuildChart();
+        this.loading = false;
+      });
   }
 
-  toggleSimulation() {
-    this.savingMode = !this.savingMode;
-    this.updateChart();
+  onToggle(active: boolean) {
+    this.savingMode = active;
+    this.rebuildChart();
   }
 
-  updateChart() {
-    if (!this.analytics) return;
+  simulatedAmount(predIdx: number): number {
+    if (!this.analytics) return 0;
+    const p = this.analytics.predictions[predIdx];
+    return this.savingMode ? p.predicted_amount + MONTHLY_SAVING * 12 * p.year : p.predicted_amount;
+  }
 
-    // 현재 기준 자산을 1,000만원이라 가정
-    const baseAsset = 10000000;
-    const simulatedLine = [baseAsset];
-    const extraSavingPerYear = 300000 * 12; // 월 30만원 추가 절약
+  private rebuildChart() {
+    if (!this.analytics || !this.user) return;
+    const color = this.savingMode ? '#00C37D' : '#3182F6';
+    const bg    = this.savingMode ? 'rgba(0,195,125,0.12)' : 'rgba(49,130,246,0.12)';
+    const points = [this.user.total_assets, ...this.analytics.predictions.map((_, i) => this.simulatedAmount(i))];
 
-    this.analytics.predictions.forEach((p: any) => {
-      if(this.savingMode) {
-        simulatedLine.push(p.predicted_amount + (extraSavingPerYear * p.year));
-      } else {
-        simulatedLine.push(p.predicted_amount);
-      }
-    });
-
-    const dataset = {
-      data: simulatedLine,
-      label: this.savingMode ? '배달/쇼핑 절약 시나리오 자산 (시뮬레이션)' : '소비 패턴 유지 시 예상 자산 (+선형 회귀 추정값)',
-      fill: true,
-      tension: 0.4,
-      borderColor: this.savingMode ? '#10b981' : '#3b82f6',
-      backgroundColor: this.savingMode ? 'rgba(16, 185, 129, 0.2)' : 'rgba(59, 130, 246, 0.2)',
-      pointBackgroundColor: this.savingMode ? '#10b981' : '#3b82f6',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: this.savingMode ? '#10b981' : '#3b82f6'
-    };
-
-    this.lineChartData = {
-      labels: ['현재 자산', '1년 후', '3년 후', '5년 후'],
-      datasets: [dataset]
+    this.lineData = {
+      labels: ['현재', '1년 후', '3년 후', '5년 후'],
+      datasets: [{
+        data: points,
+        label: this.savingMode ? '절약 시나리오' : '현재 패턴 유지',
+        fill: true,
+        tension: 0.4,
+        borderColor: color,
+        backgroundColor: bg,
+        pointBackgroundColor: color,
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: color,
+        pointRadius: 6,
+        pointHoverRadius: 9
+      }]
     };
   }
 }
