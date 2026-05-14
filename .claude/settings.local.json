@@ -7,7 +7,21 @@
       "Bash(npm run *)",
       "Bash(npm start *)",
       "Bash(python3 -c ' *)",
-      "Bash(sqlite3 *)"
+      "Bash(sqlite3 *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['projects'][list\\(d['projects'].keys\\(\\)\\)[0]]['architect']['build']['options'], indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
+      "Bash(ng add *)",
+      "Bash(npx ng *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); deps={**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}; print\\(deps.get\\('@angular/service-worker','없음'\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); proj=list\\(d['projects'].values\\(\\)\\)[0]; print\\(json.dumps\\(proj['architect']['build'], indent=2\\)\\)\")",
+      "Bash(npm list *)",
+      "Bash(ipconfig getifaddr *)",
+      "Bash(awk '{print $2}')",
+      "Bash(pip3 install *)",
+      "Bash(python3 *)",
+      "Bash(curl -s \"https://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth=0b4e043f65a5b613154076bc392874db&topFinGrpNo=020000&pageNo=1\")",
+      "Bash(curl -v \"https://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth=0b4e043f65a5b613154076bc392874db&topFinGrpNo=020000&pageNo=1\")",
+      "Bash(venv/bin/pip install *)"
     ]
   }
 }

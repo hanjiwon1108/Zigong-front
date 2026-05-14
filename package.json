@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:pwa": "ng build && npx http-server dist/frontend/browser -p 4200 --cors -c-1 --proxy http://localhost:4200?"
   },
   "private": true,
   "packageManager": "npm@11.8.0",
@@ -32,6 +33,7 @@
     "@angular/cli": "^21.2.7",
     "@angular/compiler-cli": "^21.2.0",
     "@tailwindcss/vite": "^4.2.4",
+    "http-server": "^14.1.1",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.2.4",
