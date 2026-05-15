@@ -63,7 +63,7 @@
   </nav>
 }
 
-<main class="content">
+<main class="content" [class.auth]="router.url === '/auth'">
   <router-outlet />
 </main>
 

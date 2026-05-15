@@ -110,7 +110,11 @@ widget-bottom-nav { display: none; }
   .mobile-help-btn { display: flex; }
 
   .content {
-    padding: 16px 20px calc(env(safe-area-inset-bottom) + 96px);
+    padding: calc(env(safe-area-inset-top) + 16px) 20px calc(env(safe-area-inset-bottom) + 96px);
+  }
+
+  .content.auth {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
   }
 }
 
