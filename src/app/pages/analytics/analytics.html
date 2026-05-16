@@ -9,7 +9,7 @@
   <div class="animate-fade-in-up">
 
     <!-- AI 요약 칩 4개 -->
-    <div class="stat-chips">
+    <div class="stat-chips" data-tour-id="analytics-chips">
       <div class="chip">
         <span class="chip-label">소비 유형</span>
         <span class="chip-value blue">{{ analytics?.consumption_type }}</span>
@@ -30,7 +30,7 @@
 
     <!-- 카테고리 목록 -->
     <div class="section-label">카테고리별 지출</div>
-    <div class="card-block">
+    <div class="card-block" data-tour-id="analytics-categories">
       @for (s of categoryStats; track s.category) {
         <div class="cat-row">
           <div class="cat-dot-wrap">
@@ -52,15 +52,63 @@
 
     <!-- 도넛 차트 -->
     <div class="section-label">비중 차트</div>
-    <div class="chart-card">
-      <div class="doughnut-box">
-        <canvas baseChart [data]="doughnutData" [options]="doughnutOptions" type="doughnut"></canvas>
+    <div class="chart-card chart-card-spacious" role="region" aria-label="카테고리별 지출 비중" data-tour-id="analytics-doughnut">
+      <div class="chart-head">
+        <div>
+          <p class="chart-kicker">전체 지출</p>
+          <p class="chart-total">{{ totalCategoryAmount | number }}원</p>
+        </div>
+        @if (topCategoryStat) {
+          <div class="top-category-pill">
+            <span class="pill-dot" [style.background]="topCategoryStat.color"></span>
+            <span>1위 {{ topCategoryStat.category }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="doughnut-stage">
+        <div class="doughnut-box">
+          <canvas baseChart [data]="doughnutData" [options]="doughnutOptions" type="doughnut"></canvas>
+          <div class="doughnut-center" aria-hidden="true">
+            <span class="center-label">최대 비중</span>
+            <strong>{{ topCategoryStat?.ratio ?? 0 }}%</strong>
+            <span class="center-category">{{ topCategoryStat?.category ?? '지출 없음' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-legend" role="list" aria-label="카테고리별 지출 목록">
+        @for (s of categoryStats; track s.category) {
+          <div class="legend-row" role="listitem">
+            <span class="legend-dot" [style.background]="s.color" aria-hidden="true"></span>
+            <span class="legend-name">{{ s.category }}</span>
+            <span class="legend-amount">{{ s.amount | number }}원</span>
+            <span class="legend-ratio">{{ s.ratio }}%</span>
+          </div>
+        } @empty {
+          <div class="empty-state">아직 표시할 지출이 없어요</div>
+        }
       </div>
     </div>
 
     <!-- 월별 바 차트 -->
     <div class="section-label">월별 지출 추이</div>
-    <div class="chart-card">
+    <div class="chart-card chart-card-spacious" role="region" aria-label="월별 지출 추이" data-tour-id="analytics-monthly">
+      <div class="chart-head">
+        <div>
+          <p class="chart-kicker">{{ monthlySummary.latestLabel }} 지출</p>
+          <p class="chart-total">{{ monthlySummary.latestAmount | number }}원</p>
+        </div>
+        <div class="month-change" [class.down]="monthlySummary.trend === 'down'" [class.same]="monthlySummary.trend === 'same'">
+          @if (monthlySummary.trend === 'up') {
+            <span>전월보다 +{{ monthlySummary.diffAmount | number }}원</span>
+          } @else if (monthlySummary.trend === 'down') {
+            <span>전월보다 -{{ (monthlySummary.diffAmount * -1) | number }}원</span>
+          } @else {
+            <span>전월과 같아요</span>
+          }
+        </div>
+      </div>
       <div class="bar-box">
         <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
       </div>
