@@ -1,0 +1,123 @@
+<div class="auth-shell animate-fade-in-up">
+  <section class="auth-hero">
+    <div class="auth-title">자공 시작하기</div>
+    <p class="auth-subtitle">계정을 만들고 나만의 소비 패턴 분석을 확인하세요.</p>
+    <div class="auth-switch">
+      @if (mode === 'signup') {
+        이미 계정이 있나요?
+        <button type="button" (click)="switchMode('login')">로그인</button>
+      } @else {
+        아직 계정이 없나요?
+        <button type="button" (click)="switchMode('signup')">회원가입</button>
+      }
+    </div>
+  </section>
+
+  <section class="auth-card">
+    <h2>{{ mode === 'signup' ? '회원가입' : '로그인' }}</h2>
+
+    @if (errorMessage) {
+      <div class="error-box" role="alert">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="success-box" role="status">{{ successMessage }}</div>
+    }
+
+    <div class="field-grid">
+      <label class="form-field">
+        <span class="form-label">이름</span>
+        <div class="input">
+          <input
+            type="text"
+            placeholder="홍길동"
+            [value]="name"
+            #nameInput
+            (input)="onNameInput(nameInput.value)"
+            autocomplete="username"
+          />
+        </div>
+      </label>
+
+      <label class="form-field">
+        <span class="form-label">이메일</span>
+        <div class="input">
+          <input
+            type="email"
+            placeholder="user@example.com"
+            [value]="email"
+            #emailInput
+            (input)="onEmailInput(emailInput.value)"
+            autocomplete="email"
+          />
+        </div>
+      </label>
+    </div>
+
+    <div class="field-grid">
+      <label class="form-field">
+        <span class="form-label">비밀번호</span>
+        <div class="input">
+          <input
+            type="password"
+            placeholder="6자 이상"
+            [value]="password"
+            #passwordInput
+            (input)="onPasswordInput(passwordInput.value)"
+            [attr.autocomplete]="mode === 'signup' ? 'new-password' : 'current-password'"
+          />
+        </div>
+      </label>
+    </div>
+
+    @if (mode === 'signup') {
+      <div class="field-grid two">
+        <label class="form-field">
+          <span class="form-label">월 수입</span>
+          <div class="input">
+            <input
+              type="number"
+              inputmode="numeric"
+              [value]="monthlyIncome"
+              #monthlyIncomeInput
+              (input)="onMonthlyIncomeInput(monthlyIncomeInput.value)"
+              placeholder="3500000"
+            />
+            <span class="unit">원</span>
+          </div>
+          <span class="helper">분석에 사용할 월 수입을 입력하세요.</span>
+        </label>
+
+        <label class="form-field">
+          <span class="form-label">총 자산</span>
+          <div class="input">
+            <input
+              type="number"
+              inputmode="numeric"
+              [value]="totalAssets"
+              #totalAssetsInput
+              (input)="onTotalAssetsInput(totalAssetsInput.value)"
+              placeholder="12000000"
+            />
+            <span class="unit">원</span>
+          </div>
+          <span class="helper">현재 자산을 입력하면 예측이 정확해져요.</span>
+        </label>
+      </div>
+    }
+
+    <div class="actions">
+      <button class="btn-primary" type="button" [disabled]="loading" (click)="onSubmit()">
+        @if (loading) {
+          처리 중...
+        } @else {
+          {{ mode === 'signup' ? '회원가입 완료' : '로그인' }}
+        }
+      </button>
+      <button class="ghost-btn" type="button" [disabled]="loading" (click)="resetForm()">
+        입력 초기화
+      </button>
+    </div>
+  </section>
+
+  <div class="footer-note">가입 후 자동으로 대시보드로 이동합니다.</div>
+</div>

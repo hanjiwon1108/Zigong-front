@@ -1,0 +1,179 @@
+.auth-shell {
+  display: grid;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.auth-hero {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 22px 20px;
+  border: 1px solid var(--divider);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+  transition: background 0.22s;
+}
+
+.auth-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: var(--text-1);
+}
+
+.auth-subtitle {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--text-3);
+  line-height: 1.55;
+}
+
+.auth-switch {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.auth-switch button {
+  border: none;
+  background: transparent;
+  color: var(--blue);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.auth-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 18px 16px 16px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--divider);
+  transition: background 0.22s;
+}
+
+.auth-card h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-1);
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--divider);
+  background: var(--bg-card-2);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+
+.input:focus-within {
+  border-color: var(--blue);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.12);
+}
+
+.input input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--text-1);
+  outline: none;
+  font-weight: 600;
+}
+
+.input .unit {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.helper {
+  font-size: 0.72rem;
+  color: var(--text-3);
+}
+
+.error-box {
+  background: var(--red-bg);
+  color: var(--red);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.success-box {
+  background: var(--green-bg);
+  color: var(--green);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+}
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text-2);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.ghost-btn:hover {
+  background: var(--bg-card-2);
+}
+.ghost-btn:active {
+  transform: scale(0.98);
+}
+
+.field-grid {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 520px) {
+  .field-grid.two {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.footer-note {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  text-align: center;
+  margin-top: 4px;
+}
