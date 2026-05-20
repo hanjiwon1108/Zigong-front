@@ -1,0 +1,24 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: 자공 시작하기
+      - paragraph [ref=e8]: 계정을 만들고 나만의 소비 패턴 분석을 확인하세요.
+      - generic [ref=e9]:
+        - text: 이미 계정이 있나요?
+        - button "로그인" [ref=e10] [cursor=pointer]
+    - generic [ref=e11]:
+      - heading "회원가입" [level=2] [ref=e12]
+      - generic [ref=e13]:
+        - generic [ref=e14]
+        - generic [ref=e18]
+      - generic [ref=e23]:
+        - generic [ref=e24]: 비밀번호
+        - textbox "비밀번호" [ref=e26]:
+          - /placeholder: 6자 이상
+      - generic [ref=e27]:
+        - generic [ref=e28]
+        - generic [ref=e34]
+      - generic [ref=e40]:
+        - button "회원가입 완료" [ref=e41] [cursor=pointer]
+        - button "입력 초기화" [ref=e42] [cursor=pointer]
+    - generic [ref=e43]: 가입 후 자동으로 대시보드로 이동합니다.

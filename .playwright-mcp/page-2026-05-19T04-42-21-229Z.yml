@@ -1,0 +1,40 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: 자공 시작하기
+      - paragraph [ref=e8]: 계정을 만들고 나만의 소비 패턴 분석을 확인하세요.
+      - generic [ref=e9]:
+        - text: 이미 계정이 있나요?
+        - button "로그인" [ref=e10] [cursor=pointer]
+    - generic [ref=e11]:
+      - heading "회원가입" [level=2] [ref=e12]
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e15]: 이름
+          - textbox "이름" [ref=e17]:
+            - /placeholder: 홍길동
+        - generic [ref=e18]:
+          - generic [ref=e19]: 이메일
+          - textbox "이메일" [ref=e21]:
+            - /placeholder: user@example.com
+      - generic [ref=e23]:
+        - generic [ref=e24]: 비밀번호
+        - textbox "비밀번호" [ref=e26]:
+          - /placeholder: 6자 이상
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]: 월 수입
+          - generic [ref=e30]:
+            - spinbutton "월 수입 원 분석에 사용할 월 수입을 입력하세요." [ref=e31]
+            - generic [ref=e32]: 원
+          - generic [ref=e33]: 분석에 사용할 월 수입을 입력하세요.
+        - generic [ref=e34]:
+          - generic [ref=e35]: 총 자산
+          - generic [ref=e36]:
+            - spinbutton "총 자산 원 현재 자산을 입력하면 예측이 정확해져요." [ref=e37]
+            - generic [ref=e38]: 원
+          - generic [ref=e39]: 현재 자산을 입력하면 예측이 정확해져요.
+      - generic [ref=e40]:
+        - button "회원가입 완료" [ref=e41] [cursor=pointer]
+        - button "입력 초기화" [ref=e42] [cursor=pointer]
+    - generic [ref=e43]: 가입 후 자동으로 대시보드로 이동합니다.

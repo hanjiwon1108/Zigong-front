@@ -1,0 +1,20 @@
+- generic [ref=e2]:
+  - navigation "메인 내비게이션" [ref=e3]:
+    - generic [ref=e4]: 자공
+    - generic [ref=e5]:
+      - link "홈" [ref=e6] [cursor=pointer]:
+        - /url: /dashboard
+      - link "분석" [ref=e7] [cursor=pointer]:
+        - /url: /analytics
+      - link "내역" [ref=e8] [cursor=pointer]:
+        - /url: /transactions
+      - link "시뮬레이터" [ref=e9] [cursor=pointer]:
+        - /url: /simulator
+      - link "설정" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+    - generic [ref=e11]:
+      - button "현재 페이지 도움말 보기" [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: "?"
+      - button "다크 모드로 전환" [ref=e14] [cursor=pointer]:
+        - img [ref=e15]
+  - main [ref=e17]
