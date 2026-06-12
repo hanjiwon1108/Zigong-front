@@ -1,38 +1,60 @@
-<header class="page-header animate-fade-in">
-  <h1>개인정보 설정</h1>
-  <p class="subtitle">계정 정보와 보안을 관리합니다.</p>
+<header class="page-header">
+  <div class="page-header-icon">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </div>
+  <div>
+    <h1>설정</h1>
+    <p class="subtitle">계정 정보와 보안 관리</p>
+  </div>
 </header>
 
 @if (user) {
-  <div class="animate-fade-in-up">
+  <div>
     <section class="profile-card" aria-label="사용자 정보">
-      <div class="avatar" aria-hidden="true">{{ user.name[0] }}</div>
-      <div class="profile-meta">
-        <span class="profile-name">{{ user.name }}님</span>
-        <span class="profile-sub">{{ user.email }}</span>
+      <div class="profile-avatar" aria-hidden="true">
+        <span>{{ user.name[0] }}</span>
+        <div class="avatar-glow"></div>
       </div>
-      <div class="profile-amount">
-        <span class="amount-label">총 자산</span>
-        <strong>{{ user.total_assets | number }}원</strong>
+      <div class="profile-meta">
+        <span class="profile-name">{{ user.name }}</span>
+        <span class="profile-email">{{ user.email }}</span>
+      </div>
+      <div class="profile-stat-row">
+        <div class="profile-stat">
+          <span class="stat-label">총 자산</span>
+          <strong>{{ user.total_assets | number }}원</strong>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="profile-stat align-end">
+          <span class="stat-label">월 수입</span>
+          <strong>{{ user.monthly_income | number }}원</strong>
+        </div>
       </div>
     </section>
 
     <section class="settings-card" aria-label="개인정보 수정">
+      <div class="settings-card-title">개인정보 수정</div>
       <div class="setting-block">
         <label class="setting-label" for="settingName">이름</label>
         <div class="setting-input">
+          <svg class="field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <input id="settingName" type="text" [value]="user.name" (input)="onNameInput($any($event.target).value)" />
         </div>
       </div>
       <div class="setting-block">
         <label class="setting-label" for="settingEmail">이메일</label>
         <div class="setting-input">
+          <svg class="field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <input id="settingEmail" type="email" [value]="user.email" (input)="onEmailInput($any($event.target).value)" />
         </div>
       </div>
       <div class="setting-block">
         <label class="setting-label" for="settingIncome">월 수입</label>
         <div class="setting-input">
+          <svg class="field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           <input id="settingIncome" type="number" inputmode="numeric" [value]="user.monthly_income" (input)="onMonthlyIncomeInput($any($event.target).value)" />
           <span class="unit">원</span>
         </div>
@@ -40,13 +62,18 @@
       <div class="setting-block">
         <label class="setting-label" for="settingAssets">총 자산</label>
         <div class="setting-input">
+          <svg class="field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
           <input id="settingAssets" type="number" inputmode="numeric" [value]="user.total_assets" (input)="onTotalAssetsInput($any($event.target).value)" />
           <span class="unit">원</span>
         </div>
       </div>
       <div class="setting-actions">
         <button class="save-btn" type="button" [disabled]="loading" (click)="save()">
-          {{ loading ? '저장 중...' : '저장하기' }}
+          @if (loading) {
+            <span class="btn-spinner"></span> 저장 중...
+          } @else {
+            저장하기
+          }
         </button>
         @if (successMessage) {
           <span class="status success">{{ successMessage }}</span>
@@ -57,13 +84,21 @@
       </div>
     </section>
 
-    <section class="settings-card" aria-label="계정 관리">
+    <section class="settings-card danger-card" aria-label="계정 관리">
+      <div class="settings-card-title">계정 관리</div>
       <div class="setting-row">
         <div class="setting-info">
           <span class="setting-title">로그아웃</span>
           <span class="setting-desc">현재 계정에서 안전하게 로그아웃합니다.</span>
         </div>
-        <button class="logout-btn" type="button" (click)="logout()">로그아웃</button>
+        <button class="logout-btn" type="button" (click)="logout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          로그아웃
+        </button>
       </div>
     </section>
   </div>

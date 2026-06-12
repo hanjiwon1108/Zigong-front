@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { gsap } from 'gsap';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { User } from '../../shared/model/types';
@@ -25,7 +26,15 @@ export class SettingsPage implements OnInit {
     this.user = getStoredUser();
     if (!this.user) {
       void this.router.navigate(['/auth']);
+      return;
     }
+    setTimeout(() => {
+      gsap.set('.page-header, .profile-card, .settings-card', { opacity: 0, y: 20 });
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.to('.page-header',   { opacity: 1, y: 0, duration: 0.4 })
+        .to('.profile-card',  { opacity: 1, y: 0, duration: 0.45 }, '-=0.2')
+        .to('.settings-card', { opacity: 1, y: 0, duration: 0.35, stagger: 0.1 }, '-=0.25');
+    }, 30);
   }
 
   onNameInput(value: string) {
