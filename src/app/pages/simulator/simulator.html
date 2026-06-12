@@ -1,59 +1,575 @@
-<header class="page-header animate-fade-in">
-  <h1>자산 시뮬레이터</h1>
-  <p class="subtitle">지출 습관을 바꾸면 얼마나 달라질까요?</p>
+<header class="page-header">
+  <div class="page-header-icon">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+      <polyline points="16 7 22 7 22 13"/>
+    </svg>
+  </div>
+  <div>
+    <h1>자산 시뮬레이터</h1>
+    <p class="subtitle">지출 습관을 바꾸면 얼마나 달라질까요?</p>
+  </div>
 </header>
 
 @if (loading) {
-  <div class="loading-state"><div class="spinner"></div></div>
+  <div class="loading-state">
+    <div class="loader-ring"><div></div><div></div><div></div><div></div></div>
+    <span class="loader-text">계산 중...</span>
+  </div>
 } @else {
-  <div class="animate-fade-in-up">
+  <div>
+    <div class="year-selector" data-tour-id="simulator-years">
+      @for (y of yearOptions; track y) {
+        <button type="button" [class.active]="simulationYears === y" (click)="onYearsChange(y)">
+          {{ y }}년
+        </button>
+      }
+    </div>
+
+    <section class="sim-hero" aria-label="자산 시뮬레이션 요약" data-tour-id="simulator-hero">
+      <div class="hero-copy">
+        <span class="hero-badge">{{ savingMode ? '절약 시나리오 적용' : '현재 패턴 기준' }}</span>
+        <p class="hero-label">{{ simulationYears }}년 후 예상 자산</p>
+        <p class="hero-amount">
+          {{ displayedSimAmount | number }}<span>원</span>
+        </p>
+      </div>
+      <div class="hero-metric">
+        <span class="metric-label">예상 성장률</span>
+        <strong>{{ targetGrowthRateDisplay }}</strong>
+      </div>
+    </section>
 
     <!-- AI 분석 인사이트 배너 -->
     <div class="insight-banner">
       <div class="insight-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <title>분석 정보</title>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
       </div>
       <p class="insight-text">
-        <strong>{{ analytics?.consumption_type }}</strong>으로 분석됐어요.
-        월 30만원만 아껴도 5년 뒤가 달라져요.
+        @if (analytics?.predictions?.length) {
+          <strong>{{ analytics?.consumption_type }}</strong
+          >으로 분석됐어요. 월 {{ monthlySaving | number }}원만 아껴도 {{ simulationYears }}년 뒤가
+          달라져요.
+        } @else {
+          아직 소비 내역이 없어 {{ simulationYears }}년 후 패턴을 분석할 수 없어요. 거래 내역을
+          추가하면 예측이 시작돼요!
+        }
       </p>
     </div>
 
     <!-- 절약 토글 -->
-    <div class="card-block">
-      <feature-saving-toggle [active]="savingMode" (toggle)="onToggle($event)" />
+    <div class="card-block" data-tour-id="simulator-toggle">
+      <feature-saving-toggle
+        [active]="savingMode"
+        [amount]="monthlySaving"
+        (toggle)="onToggle($event)"
+      />
+    </div>
+
+    <div class="card-block saving-input" data-tour-id="simulator-saving-input">
+      <div class="input-head">
+        <label class="input-label" for="monthlySaving">월 추가 저축 금액</label>
+        <span class="input-value">{{ monthlySaving | number }}원</span>
+      </div>
+      <div class="input-field">
+        <input
+          id="monthlySaving"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          max="3000000"
+          step="10000"
+          placeholder="0"
+          [ngModel]="monthlySaving"
+          (ngModelChange)="onMonthlySavingChange($event)"
+          aria-describedby="monthlySavingHint"
+        />
+        <span class="unit">원</span>
+      </div>
+      <p id="monthlySavingHint" class="input-hint">
+        0 ~ 300만원까지 1만원 단위로 설정할 수 있어요.
+      </p>
+    </div>
+
+    <div class="saving-impact" data-tour-id="simulator-impact">
+      <div class="impact-row">
+        <span class="impact-label">매월 추가 저축</span>
+        <strong>+{{ monthlySaving | number }}원</strong>
+      </div>
+      <div class="impact-row">
+        <span class="impact-label">{{ simulationYears }}년 누적 차이</span>
+        <strong class="yellow">+{{ savingGainByTargetYear | number }}원</strong>
+      </div>
     </div>
 
     <!-- 예상 자산 비교 -->
-    @if (analytics?.predictions) {
-      <div class="section-label">예상 자산</div>
+    <div class="section-label">예상 자산</div>
+    @if (analytics?.predictions?.length) {
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-label">1년 후</span>
+          <span class="stat-label">{{ analytics!.predictions[0]?.year }}년 후</span>
           <span class="stat-amount" [class.green]="savingMode">
-            {{ simulatedAmount(0) | number }}원
+            {{
+              simulatedAmount(0) + totalProductGainByYear(analytics!.predictions[0]?.year ?? 1)
+                | number
+            }}원
           </span>
-          @if (savingMode) {
-            <span class="stat-diff">+{{ (simulatedAmount(0) - analytics!.predictions[0].predicted_amount) | number }}원</span>
+          @if (savingMode && analytics!.predictions[0]) {
+            <span class="stat-diff green"
+              >+{{
+                simulatedAmount(0) - analytics!.predictions[0].predicted_amount | number
+              }}원</span
+            >
           }
         </div>
         <div class="stat-card accent">
-          <span class="stat-label">5년 후</span>
-          <span class="stat-amount" [class.green]="savingMode">
-            {{ simulatedAmount(2) | number }}원
-          </span>
-          @if (savingMode) {
-            <span class="stat-diff">+{{ (simulatedAmount(2) - analytics!.predictions[2].predicted_amount) | number }}원</span>
+          <span class="stat-label">{{ targetPredictionYear }}년 후</span>
+          <span class="stat-amount"
+            >{{ simulatedAmountByYear(targetPredictionYear) + productGainTarget | number }}원</span
+          >
+          @if (savingMode && targetPrediction) {
+            <span class="stat-diff yellow"
+              >+{{
+                simulatedAmountByYear(targetPredictionYear) - targetPrediction.predicted_amount
+                  | number
+              }}원</span
+            >
           }
         </div>
       </div>
     }
 
-    <!-- 성장 곡선 차트 -->
-    <div class="section-label">자산 성장 곡선</div>
-    <div class="chart-card">
-      <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
+    <!-- 4대보험 -->
+    <div class="pension-header" data-tour-id="simulator-insurance">
+      <div class="section-label" style="margin: 0">4대보험 공제</div>
+      <label class="pension-toggle">
+        <input type="checkbox" [(ngModel)]="insuranceEnabled" (ngModelChange)="rebuildChart()" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">{{ insuranceEnabled ? '반영' : '미반영' }}</span>
+      </label>
+    </div>
+    @if (insuranceEnabled) {
+      <div class="pension-card">
+        <div class="pension-row">
+          <span class="pension-label">국민연금 (4.5%)</span>
+          <strong>-{{ monthlyPensionContribution | number }}원</strong>
+        </div>
+        <div class="pension-row">
+          <span class="pension-label">건강보험 (3.545%)</span>
+          <strong>-{{ monthlyHealthInsurance | number }}원</strong>
+        </div>
+        <div class="pension-row">
+          <span class="pension-label">장기요양보험</span>
+          <strong>-{{ monthlyLongCareInsurance | number }}원</strong>
+        </div>
+        <div class="pension-row">
+          <span class="pension-label">고용보험 (0.9%)</span>
+          <strong>-{{ monthlyEmploymentInsurance | number }}원</strong>
+        </div>
+        <div class="pension-row pension-total">
+          <span class="pension-label">월 실수령액 (세전)</span>
+          <strong class="blue">{{ monthlyNetIncome | number }}원</strong>
+        </div>
+        <p class="pension-note">※ 소득세·지방소득세 미포함, 단순 추정치입니다.</p>
+      </div>
+    }
+
+    <!-- 국민연금 수령 추정 -->
+    <div class="pension-header" data-tour-id="simulator-pension">
+      <div class="section-label" style="margin: 0">국민연금 수령 추정</div>
+      <label class="pension-toggle">
+        <input type="checkbox" [(ngModel)]="pensionEnabled" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">{{ pensionEnabled ? '포함' : '미포함' }}</span>
+      </label>
+    </div>
+    @if (pensionEnabled) {
+      <div class="pension-card">
+        <div class="pension-row">
+          <span class="pension-label">월 납부액 (본인 4.5%)</span>
+          <strong>{{ monthlyPensionContribution | number }}원</strong>
+        </div>
+        <div class="pension-row">
+          <span class="pension-label">{{ simulationYears }}년 납부 후 예상 월 수령액</span>
+          <strong class="blue">{{ estimatedMonthlyPension | number }}원</strong>
+        </div>
+        <p class="pension-note">※ 실제 수령액과 다를 수 있는 단순 추정치입니다.</p>
+      </div>
+    }
+
+    <!-- 실시간 카드 이벤트 -->
+    <div class="pension-header" data-tour-id="simulator-card-events">
+      <div class="section-label" style="margin: 0">실시간 카드 내역</div>
+      <button
+        class="card-connect-btn"
+        type="button"
+        [class.connected]="cardEventConnected"
+        (click)="cardEventConnected ? disconnectCardEvents() : connectCardEvents()"
+      >
+        <span class="card-connect-dot"></span>
+        {{ cardEventConnected ? '연결됨' : '연결하기' }}
+      </button>
     </div>
 
+    <!-- 카드 내역 직접 입력 -->
+    <form class="card-inject-form" (ngSubmit)="injectCardEvent()">
+      <p class="card-inject-desc">결제 내역을 직접 입력하면 AI 분석과 실시간 피드에 즉시 반영됩니다.</p>
+      <div class="card-inject-fields">
+        <label class="inject-field">
+          <span class="inject-label">가맹점명</span>
+          <div class="inject-input-wrap">
+            <svg class="inject-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <input
+              class="inject-input"
+              type="text"
+              placeholder="예: 스타벅스 강남점"
+              [(ngModel)]="injectForm.merchant"
+              name="merchant"
+              required
+            />
+          </div>
+        </label>
+        <label class="inject-field">
+          <span class="inject-label">카테고리</span>
+          <div class="inject-input-wrap inject-select-wrap">
+            <svg class="inject-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <select class="inject-input inject-select" [(ngModel)]="injectForm.category" name="category">
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+            <svg class="inject-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </label>
+        <label class="inject-field">
+          <span class="inject-label">금액</span>
+          <div class="inject-input-wrap">
+            <svg class="inject-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            <input
+              class="inject-input"
+              type="number"
+              placeholder="예: 6500"
+              [(ngModel)]="injectForm.amount"
+              name="amount"
+              min="1"
+              required
+            />
+            <span class="inject-unit">원</span>
+          </div>
+        </label>
+      </div>
+      <button class="card-inject-btn" type="submit" [disabled]="injectLoading">
+        @if (injectLoading) {
+          <span class="btn-spinner"></span>처리 중...
+        } @else {
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          내역 추가
+        }
+      </button>
+    </form>
+    @if (cardEvents.length) {
+      <div class="card-event-list">
+        @for (ev of cardEvents; track ev.time + ev.merchant) {
+          <div class="card-event-item">
+            <div class="card-event-left">
+              <span class="card-event-merchant">{{ ev.merchant }}</span>
+              <span class="card-event-meta">{{ ev.category }} · {{ ev.date }} {{ ev.time }}</span>
+            </div>
+            <span class="card-event-amount">-{{ ev.amount | number }}원</span>
+          </div>
+        }
+      </div>
+    } @else if (cardEventConnected) {
+      <p class="product-empty">잠시 후 결제 내역이 표시됩니다...</p>
+    } @else {
+      <p class="product-empty">연결하기를 누르면 실시간 카드 내역을 받아볼 수 있어요.</p>
+    }
+
+    <!-- 적금/예금 상품 -->
+    <div class="section-label-row" data-tour-id="simulator-products">
+      <span class="section-label" style="margin: 0">내 적금·예금</span>
+      <button class="add-product-btn" type="button" (click)="openProductModal()">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <title>상품 추가</title>
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        상품 추가
+      </button>
+    </div>
+
+    @if (userProducts.length) {
+      <div class="product-list">
+        @for (p of userProducts; track p.id) {
+          <div class="product-item">
+            <div class="product-info">
+              <span class="product-name">{{ p.fin_prdt_nm }}</span>
+              <span class="product-bank">{{ p.kor_co_nm }}</span>
+              <span class="product-meta"
+                >{{ p.monthly_amount | number }}원 · {{ p.save_trm }}개월 · {{ p.intr_rate }}%</span
+              >
+            </div>
+            <div class="product-right">
+              <span class="product-maturity">만기 수령 {{ calcMaturityAmount(p) | number }}원</span>
+              <button
+                class="product-delete"
+                type="button"
+                (click)="removeProduct(p.id)"
+                aria-label="삭제"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <title>삭제</title>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+        <div class="product-total">
+          <span>{{ simulationYears }}년 내 만기 수령 합계</span>
+          <strong class="yellow">+{{ productGainTarget | number }}원</strong>
+        </div>
+      </div>
+    } @else {
+      <p class="product-empty">등록된 적금·예금 상품이 없습니다.</p>
+    }
+
+    <!-- 성장 곡선 차트 -->
+    <div class="section-label">자산 성장 곡선</div>
+    <div class="chart-card" data-tour-id="simulator-chart">
+      <div class="chart-head">
+        <div>
+          <p class="chart-kicker">시뮬레이션</p>
+          <p class="chart-title">
+            {{
+              userProducts.length
+                ? '적금·예금 포함 예측'
+                : savingMode
+                  ? '절약하면 이만큼 벌어져요'
+                  : '현재 흐름을 이어가요'
+            }}
+          </p>
+        </div>
+        <div class="chart-legend" aria-label="차트 범례">
+          @if (userProducts.length) {
+            <span class="legend-item"><i class="dot yellow"></i>적금 포함</span>
+          }
+          @if (savingMode) {
+            <span class="legend-item"><i class="dot green"></i>절약</span>
+          }
+          <span class="legend-item"><i class="dot blue"></i>현재</span>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- 상품 추가 모달 -->
+@if (showProductModal) {
+  <div class="modal-backdrop" (click)="closeProductModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-scroll">
+      <div class="modal-header">
+        <h2>적금·예금 상품 추가</h2>
+        <button class="modal-close" type="button" (click)="closeProductModal()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <title>닫기</title>
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-tabs">
+        <button
+          type="button"
+          [class.active]="productTab === 'saving'"
+          (click)="onProductTabChange('saving')"
+        >
+          적금
+        </button>
+        <button
+          type="button"
+          [class.active]="productTab === 'deposit'"
+          (click)="onProductTabChange('deposit')"
+        >
+          예금
+        </button>
+      </div>
+
+      @if (!selectedProduct) {
+        <div class="product-search">
+          <input
+            type="text"
+            placeholder="상품명 또는 은행명 검색"
+            [(ngModel)]="productSearchTerm"
+            aria-label="상품 검색"
+          />
+        </div>
+        <div class="product-search-list">
+          @if (filteredProducts.length === 0) {
+            <p class="product-empty">검색 결과가 없습니다.</p>
+          } @else {
+            @for (p of filteredProducts; track p.fin_prdt_cd) {
+              <button class="product-search-item" type="button" (click)="selectProduct(p)">
+                <div class="psi-left">
+                  <span class="psi-name">{{ p.fin_prdt_nm }}</span>
+                  <span class="psi-bank">{{ p.kor_co_nm }}</span>
+                </div>
+                <div class="psi-right">
+                  @if (p.best_option) {
+                    <span class="psi-rate">{{ p.best_option.intr_rate }}%</span>
+                    <span class="psi-trm">{{ p.best_option.save_trm }}개월</span>
+                  }
+                </div>
+              </button>
+            }
+          }
+        </div>
+      } @else {
+        <div class="modal-detail">
+          <div class="modal-product-title">
+            <button class="back-btn" type="button" (click)="selectedProduct = null">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <title>뒤로</title>
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <div>
+              <p class="modal-product-name">{{ selectedProduct.fin_prdt_nm }}</p>
+              <p class="modal-product-bank">{{ selectedProduct.kor_co_nm }}</p>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label>금리 선택</label>
+            <div class="option-list">
+              @for (opt of selectedProduct.options; track opt.save_trm + opt.rsrv_type_nm) {
+                <button
+                  type="button"
+                  class="option-item"
+                  [class.selected]="selectedOption === opt"
+                  (click)="selectedOption = opt"
+                >
+                  {{ opt.save_trm }}개월 · {{ opt.rsrv_type_nm }} ·
+                  <strong>{{ opt.intr_rate }}%</strong>
+                  @if (opt.intr_rate2 > opt.intr_rate) {
+                    <span class="opt-max">(최고 {{ opt.intr_rate2 }}%)</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label for="monthlyAmt">월 납입금액</label>
+            <div class="input-field">
+              <input
+                id="monthlyAmt"
+                type="number"
+                inputmode="numeric"
+                [(ngModel)]="newMonthlyAmount"
+                min="10000"
+                step="10000"
+              />
+              <span class="unit">원</span>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label for="startDate">시작일</label>
+            <div class="input-field">
+              <input id="startDate" type="date" [(ngModel)]="newStartDate" />
+            </div>
+          </div>
+
+          @if (selectedOption) {
+            <div class="modal-preview">
+              <span>예상 만기 수령액</span>
+              <strong
+                >{{
+                  calcMaturityAmount({
+                    id: 0,
+                    user_id: 0,
+                    product_type: productTab,
+                    fin_prdt_nm: selectedProduct.fin_prdt_nm,
+                    kor_co_nm: selectedProduct.kor_co_nm,
+                    monthly_amount: newMonthlyAmount,
+                    intr_rate: selectedOption.intr_rate,
+                    save_trm: selectedOption.save_trm,
+                    start_date: newStartDate,
+                  }) | number
+                }}원</strong
+              >
+            </div>
+          }
+
+        </div>
+      }
+      </div>
+      @if (selectedProduct) {
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="confirm-btn"
+            [disabled]="!selectedOption || productLoading"
+            (click)="addProduct()"
+          >
+            {{ productLoading ? '추가 중...' : '추가하기' }}
+          </button>
+        </div>
+      }
+    </div>
   </div>
 }
