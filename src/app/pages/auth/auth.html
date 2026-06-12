@@ -1,13 +1,66 @@
-<div class="auth-shell animate-fade-in-up">
+<div class="auth-shell">
+  <div class="auth-bg">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+  </div>
+
   <section class="auth-hero">
-    <div class="auth-title">자공 시작하기</div>
-    <p class="auth-subtitle">계정을 만들고 나만의 소비 패턴 분석을 확인하세요.</p>
+    <div class="brand-logo">
+      <div class="brand-icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 외곽 육각형 반짝 -->
+          <circle cx="16" cy="16" r="13" fill="url(#brandGrad)" opacity="0.15"/>
+          <!-- 메인 다이아몬드 -->
+          <path d="M16 4 L26 14 L16 28 L6 14 Z" fill="url(#brandGrad)" opacity="0.9"/>
+          <!-- 내부 하이라이트 -->
+          <path d="M16 4 L26 14 L16 17 L6 14 Z" fill="white" opacity="0.25"/>
+          <!-- 상승 화살표 (중심) -->
+          <path d="M11 18 L16 11 L21 18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M16 11 L16 22" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <!-- 스파클 작은 별 -->
+          <circle cx="6" cy="7" r="1.2" fill="white" opacity="0.6"/>
+          <circle cx="26" cy="9" r="0.9" fill="white" opacity="0.5"/>
+          <circle cx="25" cy="24" r="0.7" fill="white" opacity="0.4"/>
+          <defs>
+            <linearGradient id="brandGrad" x1="6" y1="4" x2="26" y2="28" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7AB3FF"/>
+              <stop offset="50%" stop-color="#A855F7"/>
+              <stop offset="100%" stop-color="#2DD4BF"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span>자공</span>
+    </div>
+    <div class="auth-title">스마트한 소비 분석</div>
+    <p class="auth-subtitle">AI가 나의 소비 패턴을 분석하고<br>더 나은 재정 습관을 만들어 드려요.</p>
+    <div class="auth-features">
+      <div class="feature-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        AI 소비 분석
+      </div>
+      <div class="feature-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+        </svg>
+        자산 시뮬레이터
+      </div>
+      <div class="feature-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        이상 탐지
+      </div>
+    </div>
     <div class="auth-switch">
       @if (mode === 'signup') {
-        이미 계정이 있나요?
+        <span>이미 계정이 있나요?</span>
         <button type="button" (click)="switchMode('login')">로그인</button>
       } @else {
-        아직 계정이 없나요?
+        <span>아직 계정이 없나요?</span>
         <button type="button" (click)="switchMode('signup')">회원가입</button>
       }
     </div>
@@ -17,38 +70,34 @@
     <h2>{{ mode === 'signup' ? '회원가입' : '로그인' }}</h2>
 
     @if (errorMessage) {
-      <div class="error-box" role="alert">{{ errorMessage }}</div>
+      <div class="error-box" role="alert">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ errorMessage }}
+      </div>
     }
     @if (successMessage) {
-      <div class="success-box" role="status">{{ successMessage }}</div>
+      <div class="success-box" role="status">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {{ successMessage }}
+      </div>
     }
 
     <div class="field-grid">
-      <label class="form-field">
-        <span class="form-label">이름</span>
-        <div class="input">
-          <input
-            type="text"
-            placeholder="홍길동"
-            [value]="name"
-            #nameInput
-            (input)="onNameInput(nameInput.value)"
-            autocomplete="username"
-          />
-        </div>
-      </label>
+      @if (mode === 'signup') {
+        <label class="form-field">
+          <span class="form-label">이름</span>
+          <div class="input">
+            <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" placeholder="홍길동" [value]="name" #nameInput (input)="onNameInput(nameInput.value)" autocomplete="username"/>
+          </div>
+        </label>
+      }
 
       <label class="form-field">
         <span class="form-label">이메일</span>
         <div class="input">
-          <input
-            type="email"
-            placeholder="user@example.com"
-            [value]="email"
-            #emailInput
-            (input)="onEmailInput(emailInput.value)"
-            autocomplete="email"
-          />
+          <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" placeholder="user@example.com" [value]="email" #emailInput (input)="onEmailInput(emailInput.value)" autocomplete="email"/>
         </div>
       </label>
     </div>
@@ -57,14 +106,8 @@
       <label class="form-field">
         <span class="form-label">비밀번호</span>
         <div class="input">
-          <input
-            type="password"
-            placeholder="6자 이상"
-            [value]="password"
-            #passwordInput
-            (input)="onPasswordInput(passwordInput.value)"
-            [attr.autocomplete]="mode === 'signup' ? 'new-password' : 'current-password'"
-          />
+          <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <input type="password" placeholder="6자 이상" [value]="password" #passwordInput (input)="onPasswordInput(passwordInput.value)" [attr.autocomplete]="mode === 'signup' ? 'new-password' : 'current-password'"/>
         </div>
       </label>
     </div>
@@ -74,33 +117,21 @@
         <label class="form-field">
           <span class="form-label">월 수입</span>
           <div class="input">
-            <input
-              type="number"
-              inputmode="numeric"
-              [value]="monthlyIncome"
-              #monthlyIncomeInput
-              (input)="onMonthlyIncomeInput(monthlyIncomeInput.value)"
-              placeholder="3500000"
-            />
+            <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            <input type="number" inputmode="numeric" [value]="monthlyIncome" #monthlyIncomeInput (input)="onMonthlyIncomeInput(monthlyIncomeInput.value)" placeholder="3500000"/>
             <span class="unit">원</span>
           </div>
-          <span class="helper">분석에 사용할 월 수입을 입력하세요.</span>
+          <span class="helper">분석에 사용할 월 수입</span>
         </label>
 
         <label class="form-field">
           <span class="form-label">총 자산</span>
           <div class="input">
-            <input
-              type="number"
-              inputmode="numeric"
-              [value]="totalAssets"
-              #totalAssetsInput
-              (input)="onTotalAssetsInput(totalAssetsInput.value)"
-              placeholder="12000000"
-            />
+            <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+            <input type="number" inputmode="numeric" [value]="totalAssets" #totalAssetsInput (input)="onTotalAssetsInput(totalAssetsInput.value)" placeholder="12000000"/>
             <span class="unit">원</span>
           </div>
-          <span class="helper">현재 자산을 입력하면 예측이 정확해져요.</span>
+          <span class="helper">현재 보유 자산</span>
         </label>
       </div>
     }
@@ -108,16 +139,15 @@
     <div class="actions">
       <button class="btn-primary" type="button" [disabled]="loading" (click)="onSubmit()">
         @if (loading) {
+          <span class="btn-spinner"></span>
           처리 중...
         } @else {
-          {{ mode === 'signup' ? '회원가입 완료' : '로그인' }}
+          {{ mode === 'signup' ? '시작하기' : '로그인' }}
         }
       </button>
-      <button class="ghost-btn" type="button" [disabled]="loading" (click)="resetForm()">
-        입력 초기화
-      </button>
+      <button class="ghost-btn" type="button" [disabled]="loading" (click)="resetForm()">초기화</button>
     </div>
   </section>
 
-  <div class="footer-note">가입 후 자동으로 대시보드로 이동합니다.</div>
+  <div class="footer-note">개인 정보는 안전하게 보호됩니다</div>
 </div>
