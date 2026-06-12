@@ -1,6 +1,21 @@
 @if (router.url !== '/auth') {
   <nav class="top-nav" aria-label="메인 내비게이션">
-    <div class="logo">자공</div>
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M16 4 L26 14 L16 28 L6 14 Z" fill="url(#navBrandGrad)" opacity="0.9"/>
+        <path d="M16 4 L26 14 L16 17 L6 14 Z" fill="white" opacity="0.2"/>
+        <path d="M11 18 L16 11 L21 18" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M16 11 L16 22" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="navBrandGrad" x1="6" y1="4" x2="26" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#7AB3FF"/>
+            <stop offset="50%" stop-color="#A855F7"/>
+            <stop offset="100%" stop-color="#2DD4BF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      자공
+    </div>
     <div class="nav-links">
       <a routerLink="/dashboard" routerLinkActive="active">홈</a>
       <a routerLink="/analytics" routerLinkActive="active">분석</a>
