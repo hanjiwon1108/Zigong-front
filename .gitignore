@@ -55,3 +55,7 @@ logs/
 # Test output
 test-results/
 playwright-report/
+
+# Tool and local artifacts
+.sisyphus/
+src/document/
