@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, AfterViewInit } from '@angular/core';
+import { gsap } from 'gsap';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { ChartConfiguration } from 'chart.js';
@@ -6,7 +7,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { AnalyticsApi } from '../../entities/analytics/api/analytics.api';
 import { TransactionApi } from '../../entities/transaction/api/transaction.api';
 import { Analytics, Transaction, Category } from '../../shared/model/types';
-import { doughnutOptions, barOptions } from '../../widgets/chart/chart-options';
+import { doughnutOptions, barOptions, doughnutGradientPlugin } from '../../widgets/chart/chart-options';
+import { Chart } from 'chart.js';
 
 interface CategoryStat {
   category: Category;
@@ -43,9 +45,13 @@ const TDS_CATEGORY_PALETTE: Record<Category, string> = {
   templateUrl: './analytics.html',
   styleUrl: './analytics.css'
 })
-export class AnalyticsPage implements OnInit {
+export class AnalyticsPage implements OnInit, AfterViewInit {
   private analyticsApi = inject(AnalyticsApi);
   private txApi = inject(TransactionApi);
+
+  constructor() {
+    Chart.register(doughnutGradientPlugin);
+  }
 
   analytics: Analytics | null = null;
   categoryStats: CategoryStat[] = [];
@@ -80,6 +86,29 @@ export class AnalyticsPage implements OnInit {
       this.monthlySummary = this.buildMonthlySummary(monthly);
       this.barData = this.buildBar(monthly);
       this.loading = false;
+      setTimeout(() => this.runEntryAnimations(), 60);
+    });
+  }
+
+  ngAfterViewInit() {}
+
+  private runEntryAnimations() {
+    gsap.set('.page-header, .stat-chips .chip, .section-label, .cat-row, .chart-card, .legend-row', {
+      opacity: 0, y: 18,
+    });
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.to('.page-header',   { opacity: 1, y: 0, duration: 0.45 })
+      .to('.stat-chips .chip', { opacity: 1, y: 0, duration: 0.35, stagger: 0.08 }, '-=0.25')
+      .to('.section-label', { opacity: 1, y: 0, duration: 0.3,  stagger: 0.06 }, '-=0.1')
+      .to('.cat-row',       { opacity: 1, y: 0, duration: 0.28, stagger: 0.05 }, '-=0.2')
+      .to('.chart-card',    { opacity: 1, y: 0, duration: 0.4,  stagger: 0.1  }, '-=0.2')
+      .to('.legend-row',    { opacity: 1, y: 0, duration: 0.25, stagger: 0.04 }, '-=0.3');
+
+    // animate category bar fills
+    document.querySelectorAll<HTMLElement>('.cat-bar-fill').forEach(el => {
+      const target = el.style.width;
+      el.style.width = '0%';
+      gsap.to(el, { width: target, duration: 1.2, ease: 'power2.out', delay: 0.4 });
     });
   }
 
@@ -99,19 +128,22 @@ export class AnalyticsPage implements OnInit {
 
   private buildDoughnut(stats: CategoryStat[]): ChartConfiguration<'doughnut'>['data'] {
     const hasData = stats.length > 0;
+
     return {
       labels: hasData ? stats.map(s => s.category) : ['지출 없음'],
       datasets: [{
         data: hasData ? stats.map(s => s.amount) : [1],
         backgroundColor: hasData ? stats.map(s => s.color) : ['rgba(139,149,161,0.18)'],
-        borderColor: this.cssVar('--bg-card', '#ffffff'),
-        borderWidth: 4,
-        hoverBorderWidth: 4,
-        hoverOffset: hasData ? 4 : 0,
-        spacing: 2
+        hoverBackgroundColor: hasData ? stats.map(s => s.color) : ['rgba(139,149,161,0.3)'],
+        borderColor: 'rgba(255,255,255,0.12)',
+        borderWidth: 2,
+        hoverBorderWidth: 2,
+        hoverOffset: hasData ? 8 : 0,
+        spacing: 2,
       }]
     };
   }
+
 
   private buildMonthlySeries(txs: Transaction[]): [string, number][] {
     const monthMap: Record<string, number> = {};
