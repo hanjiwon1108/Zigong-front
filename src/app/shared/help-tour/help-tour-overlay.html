@@ -1,0 +1,41 @@
+@if (tour.active() && tour.currentStep(); as step) {
+  <div class="tour-layer" role="dialog" aria-modal="true" [attr.aria-label]="step.title">
+    @if (rect()) {
+      <div class="tour-mask tour-mask-top" [ngStyle]="topMaskStyle()"></div>
+      <div class="tour-mask tour-mask-bottom" [ngStyle]="bottomMaskStyle()"></div>
+      <div class="tour-mask tour-mask-left" [ngStyle]="leftMaskStyle()"></div>
+      <div class="tour-mask tour-mask-right" [ngStyle]="rightMaskStyle()"></div>
+      <div class="tour-highlight" [ngStyle]="highlightStyle()"></div>
+      <div class="tour-orbit" [ngStyle]="highlightStyle()"></div>
+
+      <section class="tour-panel" [class.is-changing]="isStepChanging()" [ngStyle]="panelStyle()">
+        <div class="tour-progress" aria-hidden="true">
+          <span [ngStyle]="progressStyle()"></span>
+        </div>
+        <div class="tour-meta">
+          <div class="tour-step">
+            {{ tour.index() + 1 }} / {{ tour.steps().length }}
+          </div>
+          <div class="tour-dots" aria-hidden="true">
+            @for (item of tour.steps(); track item.targetId; let i = $index) {
+              <span [class.active]="i === tour.index()"></span>
+            }
+          </div>
+        </div>
+        <div class="tour-copy" [class.is-changing]="isStepChanging()">
+          <h2>{{ step.title }}</h2>
+          <p>{{ step.description }}</p>
+        </div>
+        <div class="tour-actions">
+          <button type="button" class="tour-close" (click)="tour.close()">닫기</button>
+          <div class="tour-nav">
+            <button type="button" class="tour-prev" (click)="previous()" [disabled]="tour.index() === 0">이전</button>
+            <button type="button" class="tour-next" (click)="next()">
+              {{ tour.isLastStep() ? '완료' : '다음' }}
+            </button>
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+}
