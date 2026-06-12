@@ -1,104 +1,94 @@
 @if (loading) {
-  <div class="loading-state"><div class="spinner"></div></div>
+  <div class="loading-state">
+    <div class="loader-ring"><div></div><div></div><div></div><div></div></div>
+  </div>
 } @else {
-  <div class="animate-fade-in-up">
-    <!-- 사용자 인사 -->
+  <div>
     @if (user) {
       <div class="greeting">
         <div class="greeting-top">
-          <div class="avatar" aria-hidden="true">{{ user.name[0] }}</div>
+          <div class="avatar" aria-hidden="true"><span>{{ user.name[0] }}</span><div class="avatar-ring"></div></div>
           <div class="user-meta">
-            <span class="user-name">{{ user.name }}님</span>
+            <span class="user-name">{{ user.name }}님, 안녕하세요</span>
             <span class="user-income">월 수입 {{ user.monthly_income | number }}원</span>
           </div>
         </div>
       </div>
     }
 
-    <!-- 자산 히어로 카드 -->
     <div class="hero-card" role="region" aria-label="현재 자산 요약" data-tour-id="dashboard-asset">
-      <p class="hero-label">현재 자산</p>
-      <p class="hero-amount">{{ user?.total_assets | number }}<span class="hero-unit">원</span></p>
-      <div class="hero-row">
-        <span class="hero-sub">이번 달 저축 가능</span>
-        <span class="hero-saving">{{ monthlySavingDisplay }}원</span>
+      <div class="hero-bg-orb hero-bg-orb-1"></div>
+      <div class="hero-bg-orb hero-bg-orb-2"></div>
+      <div class="hero-sparkle hero-sparkle-1" aria-hidden="true"></div>
+      <div class="hero-sparkle hero-sparkle-2" aria-hidden="true"></div>
+      <div class="hero-sparkle hero-sparkle-3" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="hero-label">현재 자산</p>
+        <p class="hero-amount">{{ displayedAssetFormatted }}<span class="hero-unit">원</span></p>
+        <div class="hero-row">
+          <span class="hero-sub">이번 달 저축 가능</span>
+          <span class="hero-saving">{{ monthlySavingDisplay }}원</span>
+        </div>
       </div>
     </div>
 
-    <!-- 요약 카드 2개 -->
     <div class="summary-row" data-tour-id="dashboard-summary">
       <div class="sum-card">
+        <div class="sum-icon-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+          </svg>
+        </div>
         <p class="sum-label">30일 소비</p>
         <p class="sum-value">{{ analytics?.total_spent_last_30_days | number }}원</p>
         <span class="badge blue">{{ analytics?.consumption_type }}</span>
       </div>
       <div class="sum-card">
+        <div class="sum-icon-wrap" [class.warn]="(analytics?.impulse_ratio ?? 0) > 30">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
         <p class="sum-label">충동 소비 지수</p>
-        <p class="sum-value" [class.red]="(analytics?.impulse_ratio ?? 0) > 30">
-          {{ analytics?.impulse_ratio }}%
-        </p>
-        <div
-          class="bar-bg"
-          role="progressbar"
-          [attr.aria-valuenow]="analytics?.impulse_ratio"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
-          <div
-            class="bar-fill"
-            [style.width]="(analytics?.impulse_ratio ?? 0) + '%'"
-            [class.red]="(analytics?.impulse_ratio ?? 0) > 30"
-          ></div>
+        <p class="sum-value" [class.red]="(analytics?.impulse_ratio ?? 0) > 30">{{ analytics?.impulse_ratio }}%</p>
+        <div class="bar-bg" role="progressbar" [attr.aria-valuenow]="analytics?.impulse_ratio" aria-valuemin="0" aria-valuemax="100">
+          <div class="bar-fill" [class.red]="(analytics?.impulse_ratio ?? 0) > 30" [style.width.%]="analytics?.impulse_ratio ?? 0"></div>
         </div>
       </div>
     </div>
 
-    <!-- 이상 소비 알림 -->
     @if (anomalies.length > 0) {
       <div class="section-title" data-tour-id="dashboard-anomalies">AI 이상 탐지</div>
-      @for (a of anomalies; track a.id) {
-        <div class="alert-row" role="alert">
-          <div class="alert-icon" aria-hidden="true">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#F04452"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <title>알림</title>
-              <path
-                d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-              />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
+      <div class="alerts-wrap">
+        @for (a of anomalies; track a.id) {
+          <div class="alert-row" role="alert">
+            <div class="alert-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F04452" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="alert-body">
+              <span class="alert-desc">{{ a.description }} <span class="alert-category">· {{ a.category }}</span></span>
+              <span class="alert-reason">{{ a.reasons[0] }}</span>
+              <span class="alert-date">{{ a.date }}</span>
+            </div>
+            <span class="alert-amount">-{{ a.amount | number }}원</span>
           </div>
-          <div class="alert-body">
-            <span class="alert-desc">{{ a.description }}</span>
-            <span class="alert-date">{{ a.date }}</span>
-          </div>
-          <span class="alert-amount" aria-label="이상 지출 금액">-{{ a.amount | number }}원</span>
-        </div>
-      }
+        }
+      </div>
     }
 
-    <!-- 최근 내역 -->
     <div class="section-title">최근 지출</div>
     <div class="card-block" role="list" data-tour-id="dashboard-recent">
       @for (t of recentTx; track t.id) {
         <div class="tx-row" role="listitem">
-          <div class="tx-icon-wrap" aria-hidden="true">
-            <ui-category-tag [category]="t.category" />
-          </div>
+          <ui-category-tag [category]="t.category" />
           <div class="tx-info">
             <span class="tx-desc">{{ t.description }}</span>
             <span class="tx-date">{{ t.date }}</span>
           </div>
-          <span class="tx-amount" aria-label="지출 금액">-{{ t.amount | number }}원</span>
+          <span class="tx-amount">-{{ t.amount | number }}원</span>
         </div>
       }
     </div>
